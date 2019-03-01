@@ -2,16 +2,31 @@
 
 Components:
 
-## Name System
+## Clients
 
-This will be an interface to the NDP membership system that manages permissions and statuses.
+### App
 
-## Resolution System
+The user app  
+  Display resolutions  
+  Vote on resolution priority  
+  
+## Server
 
-This is the part of the system used for editing and commenting on resolutions.
+A common server for signon and data access  
 
-## Prioritizaion
+## Utilities
 
-This part of the system is to set the priorities of the resolution.
+### fixedstrings
 
+Generate the fixed strings module  
+
+### gen-html
+
+Generate html for the various system versions  
+
+### update-version
+
+This defines the fixed strings for the clients  
+  Includes English versions of the strings  
+  
 
