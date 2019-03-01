@@ -12,11 +12,12 @@
 	(fn [row]
 		(let 
 			[
-				member-name (first row)
-				password (auth/crypt-password (second row))
-				email (second (rest row))
+				member-name (nth row 0)
+				password (auth/crypt-password (nth row 1))
+				email (nth row 2)
+				riding (Integer/parseInt (nth row 3))
 			]
-			(insert! db :members {:name member-name, :password password, :email email})
+			(insert! db :members {:name member-name, :password password, :email email :riding riding})
 		)
 	)
 )
@@ -29,29 +30,23 @@
 	)
 )
 
-(defn get-uri [user db-name]
-	(let
-		[
-	 		_ (println "database password:")
-	  		password (read-line)
-	  		db-password (str/replace password " " "+")
-		]
-		(str "jdbc:postgresql://localhost:5432/" db-name "?user=" user "&password=" db-password)
-	)
+(defn get-uri [user db-name db-password]
+	(str "jdbc:postgresql://localhost:5432/" db-name "?user=" user "&password=" db-password)
 )
 
 (defn -main
   "Fill members database"
   [& args]
-  (if (== 3 (count args))
+  (if (== 4 (count args))
 	  (let 
 	  	[
-	  		user (first args)
-	  		db-name (second args)
-	  		data (slurp (second (rest args)))
+	  		user (nth args 0)
+	  		db-name (nth args 1)
+	  		db-password (nth args 2)
+	  		data (slurp (nth args 3))
 	   	]
-	   	(update-data (get-uri user db-name) data)
+	   	(update-data (get-uri user db-name db-password) data)
 	  )
-	  (println "Usage: lein run user db-name data_file")
+	  (println "Usage: lein run user db_name db_password data_file")
 	)
 )

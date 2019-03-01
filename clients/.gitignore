@@ -1,0 +1,8 @@
+# ignore elm things
+
+elm-stuff
+target
+
+# ignore generated files
+
+src/FixedStrings.elm

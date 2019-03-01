@@ -1,12 +1,3 @@
-CREATE TABLE languages
-(
-	language_id INTEGER PRIMARY KEY,
-	code TEXT NOT NULL,
-	name TEXT NOT NULL
-);
-
-INSERT INTO languages (language_id, code, name) VALUES (1, 'en', 'English');
-
 CREATE TABLE roles
 (
 	role_id INTEGER PRIMARY KEY
