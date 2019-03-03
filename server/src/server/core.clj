@@ -4,20 +4,24 @@
 	(:use ring.adapter.jetty)
 	(:require [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
          [ring.util.response :refer [response]])
+	(:require [ring.middleware.params :refer [wrap-params]])
 	(:require [compojure.core :refer :all] [compojure.route :as route])
 	(:require [clojure.java.jdbc :refer :all :as jdbc])
 	(:use clojure.java.jdbc)
 	(:require [clojure.string :as str])
 	(:require [ring-debug-logging.core :refer [wrap-with-logger]])
+	(:require [clj-http.client :as client])
 )
 
 (defn return-error [message]
 	{:status 400 :body message}
 )
 
-(defn fixed-strings [db version language]
+(defn fixed-strings [db version-string language]
 	(let 
 		[
+			version (Integer/parseInt version-string)
+
 			columns "fixed_string.name, fixed_translation.string "
 			from "language, fixed_string, fixed_translation "
 			base-where "fixed_string.version = ? AND language.code = ? "
@@ -27,18 +31,22 @@
 			query-string (str "SELECT " columns "FROM " from "WHERE " where ";")
 			result (query db [query-string version language])
 		]
+		result		
 	)
 )
 
 (defn shutdown [saved-phrase given-phrase]
 	(if (== 0 (compare saved-phrase given-phrase))
-		(System/exit 0)
+		(do 
+			(println "Server shutting down")
+			(System/exit 0)
+		)
 		(return-error "Bad body")
 	)
 )
 
-(defroutes member-routes
-	(POST "/fixedstrings" [:as {db :connection {version "version" language "language"} :body}] 
+(defroutes server-routes
+	(GET "/fixedstrings" [:as {db :connection {version "version" language "language"} :params}] 
 		(fixed-strings db version language))
 	(POST "/shutdown" [:as {saved-phrase :shutdown {given-phrase "shutdown"} :body}] 
 		(shutdown saved-phrase given-phrase))
@@ -49,7 +57,7 @@
 	(let [cors-policy
 		    { 
 		    	:allowed-origins :match-origin
-				:allowed-methods #{:post}
+				:allowed-methods #{:post :get}
 				:request-headers #{"Accept" "Content-Type" "Origin"}
 				:exposed-headers nil
 				:allow-credentials? true
@@ -88,10 +96,11 @@
 			wrap-db (make-wrap-db db-url)
 			insert-shutdown (make-insert-shutdown shutdown)
 		] 
-		(-> member-routes
+		(-> server-routes
 			(wrap-db)
 			(wrap-json-body)
 			(wrap-json-response)
+			(wrap-params)
 			(insert-shutdown)
 			(cors)
 ;			(wrap-with-logger)

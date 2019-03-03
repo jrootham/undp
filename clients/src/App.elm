@@ -14,11 +14,12 @@ main =
 
 type alias Model =
   { server : String
+    fixedStrings : (Array String)
   }
 
 init: String -> (Model, Cmd Msg)
 init target =
-    ({server = target}, Cmd.none)
+    ({server = target, fixedStrings = empty}, Cmd.none)
 
 type Msg
     = GotStrings (Result Http.Error String)

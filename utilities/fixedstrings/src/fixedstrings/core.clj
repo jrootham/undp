@@ -50,10 +50,21 @@
 	)
 )
 
+(defn current-version [db]
+	(let
+		[
+			query-string "SELECT MAX(version) AS version FROM fixed_string;"
+			result (query db [query-string])
+		]
+		(get (first result :version))
+	)
+)
+
 (defn write-constants [elm-path clojure-path db-url]
 	(with-db-connection [db {:connection-uri db-url}]
 		(with-open [out-file (writer (str elm-path "/" "FixedStrings.elm"))]
   			(.write out-file "module FixedStrings exposing(...)\n")
+  			(.write out-file (str "version=" (current-version db) "\n"))  			
   			(write-definitions db out-file)
   		)
 	)
