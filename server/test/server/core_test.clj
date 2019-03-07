@@ -4,13 +4,14 @@
 	(:require [clj-http.client :as client])
 )
 
-(def expected-fixed "[{\"name\":\"bar\",\"string\":\"bar and foo\"}]")
+(def expected-fixed "[\"foo and bar\",\"hoo boy\"]")
 
 (defn get-fixedstring [version language]
 	(let 
 		[
 			headers {"Origin" "http://localhost:3333"}
-			response (client/get "http://localhost:3333/fixedstrings?version=1&language=en" {:headers headers})
+			url "http://localhost:3333/fixedstrings?version=1&language=en"
+			response (client/get url {:headers headers})
 		]
 		(get response :body)
 	)

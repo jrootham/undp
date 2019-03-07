@@ -9,18 +9,18 @@
 (defn write-line [out-file row]
 	(let
 		[
-			id (get row :id)
+			index-value (get row :index)
 			string-name (get row :name)
 		]
-		(.write out-file (str string-name "=" (str id) "\n"))
+		(.write out-file (str string-name "=" (str index-value) "\n"))
 	)
 )
 
-(defn write-definitions [db out-file]
+(defn write-definitions [db out-file version]
 	(let
 		[
-			query-string "SELECT id,name FROM fixed_string ORDER BY id;"
-			row-list (query db [query-string])
+			query-string "SELECT index,name FROM fixed_string WHERE version=? ORDER BY id;"
+			row-list (query db [query-string version])
 			write-row (partial write-line out-file)
 		]
 
@@ -56,16 +56,18 @@
 			query-string "SELECT MAX(version) AS version FROM fixed_string;"
 			result (query db [query-string])
 		]
-		(get (first result :version))
+		(get (first result) :version)
 	)
 )
 
 (defn write-constants [elm-path clojure-path db-url]
 	(with-db-connection [db {:connection-uri db-url}]
-		(with-open [out-file (writer (str elm-path "/" "FixedStrings.elm"))]
-  			(.write out-file "module FixedStrings exposing(...)\n")
-  			(.write out-file (str "version=" (current-version db) "\n"))  			
-  			(write-definitions db out-file)
+		(with-open [out-file (writer (str elm-path "/" "FixedStringsConstants.elm"))]
+			(let [version (current-version db)]
+	  			(.write out-file "module FixedStringsConstants exposing(..)\n")
+	  			(.write out-file (str "version=" version "\n"))  			
+	  			(write-definitions db out-file version)
+			)
   		)
 	)
 

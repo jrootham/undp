@@ -22,16 +22,17 @@
 		[
 			version (Integer/parseInt version-string)
 
-			columns "fixed_string.name, fixed_translation.string "
+			columns "fixed_translation.string AS string "
 			from "language, fixed_string, fixed_translation "
 			base-where "fixed_string.version = ? AND language.code = ? "
 			join-fixed "AND fixed_translation.fixed_string_id = fixed_string.id "
 			join-language "AND fixed_translation.language_id = language.id "
 			where (str base-where join-fixed join-language)
-			query-string (str "SELECT " columns "FROM " from "WHERE " where ";")
+			query-string (str "SELECT " columns "FROM " from "WHERE " where "ORDER BY index;")
 			result (query db [query-string version language])
 		]
-		result		
+		
+		(map (fn [element] (element :string)) result)
 	)
 )
 
@@ -103,7 +104,7 @@
 			(wrap-params)
 			(insert-shutdown)
 			(cors)
-;			(wrap-with-logger)
+			(wrap-with-logger)
 		)
 	)
 )

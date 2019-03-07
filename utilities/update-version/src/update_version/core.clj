@@ -38,7 +38,7 @@
 	)
 )
 
-(defn fill-row [db version row]
+(defn fill-row [db version row index_value]
 	(let
 		[
 			string-name (first row)
@@ -52,7 +52,7 @@
 			(try 
 				(let
 				[
-					row-list (insert! db :fixed_string {:name string-name :version version})
+					row-list (insert! db :fixed_string {:name string-name :version version :index index_value})
 					string_id (get (first row-list) :id)
 				]
 					(insert! db :fixed_translation {:fixed_string_id string_id :language_id 1 :string string})
@@ -76,7 +76,7 @@
 
 (defn fill-strings [db version parsed-csv]
 	(let [map-row (partial fill-row db version)]
-		(doall (map map-row parsed-csv))
+		(doall (map map-row parsed-csv (range 0 (count parsed-csv))))
 	)
 )
 

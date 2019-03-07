@@ -5,4 +5,5 @@ target
 
 # ignore generated files
 
-src/FixedStrings.elm
+src/FixedStringsConstants.elm
+src/Group.elm

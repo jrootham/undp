@@ -5,9 +5,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies 
   [
-  		[org.clojure/clojure "1.8.0"]
-  		[org.postgresql/postgresql "9.4-1206-jdbc41"]
-		  [org.clojure/java.jdbc "0.7.1"]
+  		[org.clojure/clojure "1.10.0"]
+  		[org.postgresql/postgresql "42.2.5"]
+		  [org.clojure/java.jdbc "0.7.9"]
   ]
   :main ^:skip-aot fixedstrings.core
   :target-path "target/%s"
