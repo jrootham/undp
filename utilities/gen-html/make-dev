@@ -1,1 +1,1 @@
-lein run ~/dev/undp/clients/target/dev http://localhost:3333
+sed s\|{{TARGET}}\|http://localhost:3333\| <base.html >~/dev/undp/clients/target/dev/app.html
